@@ -1,48 +1,130 @@
 # Prompt Compilation
 
-Use this reference after the video has already been decomposed into shots/events and continuity has been extracted.
+Use this reference after the video has been decomposed into shots/events, important changes have been identified, and continuity has been extracted.
 
 ## Goal
 
-Convert reverse-engineering analysis into instructions a video generator can execute over time.
+Convert reverse-engineering analysis into a professional generation prompt that explains not only **what is visible**, but also **how it behaves and changes over time**.
 
-A good reverse prompt is not a film review and not a static image prompt. It should encode:
+A strong reverse prompt should encode, when relevant:
 
-- what is visible
-- what changes
-- when it changes
-- how the subject moves
-- how the camera responds
-- which details must remain stable
-- where cuts or transitions occur
-- how the clip begins and ends
-- which sound events are confirmed, inferred, or recommended when audio matters
+- subject identity and state
+- visible performance and micro-expression
+- action process and physical quality
+- spatial/compositional relationships
+- camera behavior and its visible effect
+- environment depth and atmosphere
+- lighting behavior
+- materials and image character
+- temporal progression
+- edit grammar
+- stable continuity
+- optional recommended sound reference
 
 ## Canonical Prompt Order
 
-Use this priority unless a target-model adapter overrides it:
+Use flexibly rather than as a rigid template:
 
 ```text
-Subject / Action
-→ Spatial relationship
+Subject / Performance / Action
+→ Spatial & composition relationship
 → Camera behavior
 → Environment
 → Lighting
-→ Style
-→ Temporal effects / edit grammar
-→ Sound / audio intent
-→ Continuity and negative constraints
+→ Material & style
+→ Temporal progression / edit grammar
+→ Optional recommended audio
+→ Continuity
 ```
+
+The emphasis should follow the video. A facial-performance clip should spend more words on performance; a landscape shot should spend more on camera, light, atmosphere and space.
+
+## Description Enrichment Before Compilation
+
+Before writing the final prompt, check whether important observations are still too generic.
+
+### Emotion
+
+Weak:
+
+```text
+She becomes sad.
+```
+
+Better:
+
+```text
+Her smile first pauses rather than disappearing; her gaze briefly drops, the eyes lose their earlier lightness, the lips slowly tighten, and moisture begins to gather in the eyes while she tries to hold the expression together.
+```
+
+### Action
+
+Weak:
+
+```text
+She pushes his arm away.
+```
+
+Better:
+
+```text
+After a short hesitation, she uses her forearm and shoulder to slowly guide his arm away, the movement restrained but deliberate, then subtly shifts her body farther toward the door.
+```
+
+### Camera
+
+Weak:
+
+```text
+Slight handheld movement.
+```
+
+Better:
+
+```text
+The framing remains generally stable but carries continuous low-amplitude irregular vibration, causing subtle drift in the faces and interior lines rather than exaggerated shake.
+```
+
+### Lighting
+
+Weak:
+
+```text
+Warm sunlight.
+```
+
+Better:
+
+```text
+Hard warm sunlight enters diagonally through the windshield, catching skin, sunglasses and beige upholstery; alternating road shadows repeatedly cut across the faces, creating moving bands of bright heat and dense shadow.
+```
+
+### Environment
+
+Weak:
+
+```text
+A desert highway.
+```
+
+Better:
+
+```text
+A straight highway runs through an exposed, nearly empty desert with a low horizon and visible heat shimmer in the distance; pale sand and sparse roadside detail streak backward, reinforcing speed and isolation.
+```
+
+Enhancement should add observable behavior, not invented narrative.
 
 ## Single Continuous Shot
 
-Express progression as a temporal chain:
+Express the visible progression as a temporal chain:
 
 ```text
 Start ...
 → then ...
+→ gradually ...
 → while/as the camera ...
-→ at the peak ...
+→ at the threshold/peak ...
 → finally ...
 → end on ...
 ```
@@ -50,16 +132,37 @@ Start ...
 Example skeleton:
 
 ```text
-A continuous [shot type] of [subject] in [environment].
-Start with [opening state/composition].
-The subject [action phase 1], then [action phase 2].
-As this happens, the camera [primary move], keeping [framing/spatial constraint].
-At the peak, [impact/reveal/transformation].
-The motion settles into [ending state].
-Maintain [identity/wardrobe/scene/lighting/style continuity].
+A continuous [shot type] centered on [subject/performance] in [environment].
+Start with [opening state + composition].
+The subject [visible performance/action progression].
+As this changes, the camera [movement + visible framing/parallax effect].
+Lighting/material/environment [important temporal behavior].
+At the emotional/action peak, [threshold/reveal/impact].
+End with [ending state].
+Maintain [important continuity].
 ```
 
-If sound is relevant and supported by the workflow, add synchronized events inside the same temporal chain rather than appending a disconnected sound list.
+For a performance-heavy close-up, the “performance progression” may be the dominant part of the entire prompt.
+
+## Performance Compilation
+
+When acting is central, prefer a **Performance Timeline** or continuous emotional progression.
+
+Avoid:
+
+```text
+happy → sad → crying
+```
+
+Prefer:
+
+```text
+The smile begins natural and relaxed. It does not vanish immediately; it first holds a little too long, then becomes smaller. Her gaze briefly drops and returns, now more fixed and less playful. Moisture slowly gathers along the eyes while the lips tighten and the jaw becomes subtly tense. She continues trying to maintain a faint smile even after the eyes have become visibly emotional. Only near the end does the smile finally collapse and the face approach tears.
+```
+
+Keep the intensity faithful to the reference: restrained acting should remain restrained.
+
+Read `performance-and-microexpression.md` when facial acting is a major part of the clip.
 
 ## Multi-Shot Sequence
 
@@ -71,54 +174,116 @@ Recommended structure:
 GLOBAL CONTINUITY
 ...
 
-SHOT 01 — [time or function]
+SHOT 01 — [time/function]
 ...
 
-HARD CUT / MATCH CUT / DISSOLVE / WHIP TRANSITION
+HARD CUT / MATCH CUT / DISSOLVE / other visible transition
 
 SHOT 02 — ...
 ```
 
-For each shot include only information that changes or matters specifically to that shot.
+Each shot can include:
+
+- composition
+- subject performance/action
+- camera behavior
+- important lighting/environment/material change
+- temporal progression inside the shot
+- transition out
+
+Do not require every shot to contain every category.
 
 ## Action Phase Compilation
 
-When a shot contains strong physical action, preserve visible phases:
+When physical action matters, preserve visible phases:
 
 ```text
 anticipation → initiation → execution → peak/impact → follow-through → recovery
 ```
 
-Do not force every phase when it is not visible.
-
 Useful language:
 
-- gathers weight before moving
-- suddenly launches forward
-- accelerates through frame
-- twists mid-motion
-- reaches the peak of the jump
-- collides at the center of frame
-- momentum carries both subjects laterally
-- settles into a recovery stance
+- briefly shifts weight before moving
+- launches forward with a sudden acceleration
+- movement stays compact and controlled
+- momentum carries the body laterally
+- the motion decelerates into a stable end pose
+
+Describe speed, weight, force and inertia only when visible.
 
 ## Camera Compilation
 
-Convert technical analysis into readable generation instructions.
+Prefer observable consequences over invented precision.
 
-Instead of:
+Avoid unsupported:
 
 ```text
 35 mm lens, dolly speed 1.3 m/s, 22-degree yaw
 ```
 
-when those values are unsupported, write:
+Prefer:
 
 ```text
-The camera smoothly tracks backward at matching speed, holding a stable medium framing while the background shows strong forward parallax.
+The camera smoothly tracks backward at matching speed, keeping the subject at a nearly constant medium scale while the road and roadside environment move rapidly through the background with strong forward parallax.
 ```
 
-Prefer observable consequences over invented numerical precision.
+If the exact technical movement is uncertain, describe what the frame does.
+
+## Composition Compilation
+
+When composition is meaningful, express relationships rather than only coordinates.
+
+Example:
+
+```text
+The woman carries slightly less visual weight on the left side of the frame, while the driver sits closer to camera on the right. The steering wheel and windshield create a lower/front frame, and the central rear-view mirror becomes a visual anchor between them, later carrying the pursuit information.
+```
+
+Do not turn this into a hard global constraint unless the reference truly depends on it.
+
+## Lighting and Material Compilation
+
+Lighting should describe visible interaction:
+
+```text
+Hard sun enters from front-left, producing warm facial highlights and dense interior shadows; passing roadside shadows move rapidly across the skin and sunglasses.
+```
+
+Material should describe surface character:
+
+```text
+The faded red paint has a sun-aged, slightly desaturated finish with uneven reflections; the beige interior shows small creases and wear consistent with an older vehicle.
+```
+
+Use qualifiers such as “appears,” “slightly,” or “leather-like” when material identity is uncertain.
+
+## Temporal Change Compilation
+
+Video prompts become stronger when “gradually” is unpacked.
+
+Instead of:
+
+```text
+The pursuit cars get closer.
+```
+
+write:
+
+```text
+They begin as tiny colored flashes deep in the mirror, then slowly grow in scale; the red-blue pulses become clearer through the heat distortion until the pursuit feels visibly closer and more threatening.
+```
+
+Apply the same idea to:
+
+- expression
+- focus
+- light
+- smoke
+- reflections
+- distance
+- speed
+- particles
+- object state
 
 ## Continuity Compilation
 
@@ -126,59 +291,27 @@ Extract stable details once:
 
 ```text
 GLOBAL CONTINUITY:
-Same character identity and proportions, same black coat and silver pendant, same narrow rain-soaked alley, cool cyan practical lighting with warm shop-window accents, shallow mist, realistic cinematic texture and muted contrast throughout.
+Same character identities, wardrobe and hair; same vehicle interior and desert-road geography; consistent hot golden daylight, faded warm color palette, realistic skin and aged-material texture throughout.
 ```
 
-Then avoid re-describing this entire block in every shot.
+Avoid repeating the entire block inside every shot.
 
-## Audio Compilation
+## Recommended Audio Compilation
 
-When audio matters, preserve the distinction between **source reconstruction** and **creative recommendation**.
+Audio is normally an optional **recommended reference**, especially when source audio cannot be reliably verified.
 
-### Confirmed / inferred source-audio block
-
-Use only sounds directly audible or strongly supported by visible evidence:
+Example:
 
 ```text
-LIKELY SOURCE AUDIO:
-Wet footsteps synchronized to the sprint; diffuse underground-garage room tone; a heavy metal door contact and slam with short concrete reverb.
+RECOMMENDED AUDIO:
+Continuous engine, road and wind texture inside the moving car; subtle cabin vibration and fabric movement; distant pursuit sirens can gradually become more noticeable; restrained low tension in the score; tire/sand texture grows when the car leaves the paved road.
 ```
 
-### Recommended sound-design block
+Use language such as “recommended,” “suitable,” “consider,” or “can include” when appropriate.
 
-Add creative enhancement separately:
+If the target model supports native audio, integrate compact audio cues into the relevant timeline. Otherwise return them as a separate optional sound-design block.
 
-```text
-RECOMMENDED SOUND DESIGN:
-Add a restrained low-frequency tension drone, briefly thin the ambience before the door slam, then reinforce the slam with one subtle sub-bass accent. Avoid repeated whooshes.
-```
-
-### Audiovisual timeline
-
-For high-fidelity reconstruction, align audio to the same timeline as visual events:
-
-```text
-0.0-1.8s — visual action ... | audio: ambience + footsteps
-1.8-2.4s — visual action ... | audio: breath/cloth rise
-2.4s — impact/cut | audio: synchronized contact hit
-2.4-3.0s — recovery | audio: reverb tail + ambience return
-```
-
-### Native-audio vs separate-audio workflows
-
-If the target workflow supports synchronized native audio generation, integrate only the necessary sound instructions into the main video prompt.
-
-If native audio is absent, unknown, or handled by another tool/model, return:
-
-```text
-VIDEO PROMPT
-...
-
-AUDIO / SOUND DESIGN PROMPT
-...
-```
-
-Do not overload a visual-only generator with a long audio specification that it cannot use.
+Read `audio-inference-and-design.md` for details.
 
 ## Style Compilation
 
@@ -189,81 +322,83 @@ Do not rely on generic words such as:
 - epic
 - high quality
 
-Translate style into visible properties:
+Translate them into visible properties:
 
 ```text
-cool desaturated palette, hard side lighting, slightly crushed blacks, fine film grain, restrained highlight bloom, realistic skin texture, damp reflective surfaces
+sun-baked gold and faded red palette, fine restrained film grain, realistic skin texture, subtle highlight bloom, slightly aged surfaces, dense warm daylight and controlled handheld/vehicle vibration
+```
+
+If mixing historical art direction with modern image quality, separate them conceptually:
+
+```text
+1970s production design and color character, rendered with modern photorealistic skin/material detail.
 ```
 
 ## Narrative Rhythm
 
-Encode pacing when it is visually important:
+Encode pacing when it matters:
 
 ```text
-brief anticipation hold → rapid acceleration → sharp impact → short recovery hold
+quiet observation → subtle suspicion → rising pursuit pressure → restrained interpersonal reaction → decisive final beat
 ```
 
 For montage:
 
 ```text
-fast 0.5–1 second cuts, progressively tighter framing, each cut advances the machine to a clearly more assembled state, then a longer final hold on activation
+rapid state-changing cuts, progressively tighter detail, each cut advances the process, followed by a longer final hold on the completed result
 ```
 
-## Negative / Constraint Language
+## Constraint Language
 
-Use constraints only when they protect reconstruction fidelity.
+Use constraints only when they protect important reconstruction fidelity.
 
-Examples:
+Useful:
 
 ```text
-Do not change the character's clothing between shots.
-Do not reverse left/right screen direction across the cut.
-Do not turn the hard cut into one continuous orbit.
-Do not add new background characters.
-Do not reveal the final state before the last shot.
-Do not invent dialogue when none is confirmed.
+Maintain the same character identities and vehicle interior across the sequence.
+Do not turn visible hard cuts into one continuous camera move.
+Do not invent dialogue when none is established.
 ```
 
-Avoid huge generic negative-prompt lists unrelated to the reference.
+Avoid huge generic negative-prompt lists or over-constraining every minor screen position.
 
 ## Output Density
 
-Choose prompt density based on the task:
-
 ### Compact
 
-Use when the user asks for a quick prompt or the clip is simple.
+Simple clip or user only wants a prompt.
 
 ### Detailed
 
-Use when the clip contains multiple shots, complex motion, important continuity, or meaningful audio design.
+Multiple shots, meaningful performance, complex motion, visual continuity or rich style.
 
 ### Production
 
-Use when the user wants close reproduction. Include:
+Close reconstruction with:
 
 - global continuity
 - shot timeline
-- action phases
-- camera behavior
-- lighting/style
+- performance/action progression
+- camera and composition
+- lighting/material/environment
+- temporal changes
 - edit grammar
-- source-audio inference
-- recommended sound design
-- audiovisual timing when useful
-- final compiled model prompt
+- optional recommended audio
+- final compiled prompt
 
 ## Final Quality Check
 
-Before returning the prompt, verify:
+Before returning:
 
-- It has a clear beginning and end.
-- Important actions occur in the correct order.
-- Cuts are explicit.
-- Camera and subject motion are distinguishable.
-- Stable details are protected.
-- The prompt is chronological rather than a bag of adjectives.
-- Unsupported technical precision has been removed.
-- Confirmed/inferred sound is not mixed with recommended sound.
-- Audio events align with visual timing where relevant.
-- The target model can plausibly use the prompt format.
+- Is the prompt chronological?
+- Does it explain important changes rather than only list properties?
+- Are emotions translated into visible acting when possible?
+- Are actions described with useful movement quality?
+- Does camera language include visible frame behavior?
+- Are lighting/material/environment descriptions concrete and visual?
+- Are important temporal changes explicit?
+- Are cuts preserved?
+- Are stable details consistent?
+- Is unsupported technical precision removed?
+- Is recommended audio clearly presented as reference rather than fact?
+- Is the result rich and professional without becoming rigid or over-constrained?
