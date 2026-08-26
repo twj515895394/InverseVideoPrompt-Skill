@@ -1,245 +1,223 @@
-# 视频声音反推与声音设计
+# 视频声音推荐设计
 
-本参考文件用于在反推视频提示词时处理声音层。目标不是凭空编造“原视频一定存在的声音”，而是根据可用证据区分：**实际听到的声音、从画面推测的声音、为了生成或后期复刻而推荐的声音设计**。
+本参考用于在反推视频提示词时，为视频模型或后期制作提供**声音参考与推荐**。声音层默认不是“准确还原原片声音”，而是根据画面中的动作、环境、材质、空间、剪辑节奏和氛围，推荐合理、可信、不过度的声音设计。
 
-## 1. 三层声音结论
+核心原则：**声音是参考建议，不是假装准确的原声反推。**
 
-所有声音结论优先使用以下三层标签：
-
-- **已确认（Observed）**：原视频音轨中可以直接听见，或用户明确提供。
-- **高概率推测（Inferred）**：虽然没有可靠音轨，但由清晰可见的动作、环境或事件强烈支持。
-- **创作推荐（Recommended）**：原视频是否存在无法确认，但为了增强节奏、空间感、冲击感或叙事效果，建议在生成或后期加入。
-
-不要把 Recommended 写成对原视频事实的描述。
-
-## 2. 声音分析维度
-
-按以下六类检查声音：
+## 1. 推荐声音的六个层次
 
 ### A. Dialogue / Vocal
 
-检查：
+仅在画面或用户信息明确支持时考虑：
 
-- 对白、旁白、喊叫、耳语、笑声、喘息、哭声、群体呼喊
-- 说话者位置与距离
-- 口型是否可见、是否需要 lip sync
-- 声音情绪、语速、停顿、气息强弱
-- 是否应保持无对白
+- 对白
+- 旁白
+- 喊叫、耳语、笑声、哭声
+- 呼吸、喘息、用力声
+- lip sync 需求
 
-若只能看到人物张嘴，不应自动生成具体台词。可以写“可能有一句短促喊声/对白”，但不要杜撰句子内容。
+如果只能看到人物张嘴，不要杜撰具体台词。可以推荐“短促对白/喊声/呼吸变化”，但不要编写原片并不存在的具体句子。
 
 ### B. Foley / Action SFX
 
-根据可见动作推测同步拟音：
+根据可见动作和材质推荐同步拟音：
 
-- 脚步、衣料摩擦、呼吸
-- 手掌接触、抓取、推门、放置物品
-- 武器挥动、碰撞、金属摩擦
-- 机械按键、旋钮、卡扣、零件装配
-- 跌落、撞击、碎裂、滚动
+- 脚步
+- 衣料摩擦
+- 抓取、推门、放置物体
+- 金属接触、机械卡扣
+- 碰撞、跌落、碎裂
 - 水花、沙土、树叶、火焰等材质反馈
 
-声音必须与动作材质、重量、速度和距离匹配。
+声音应与材质、重量、速度、距离和动作力度匹配。
 
 ### C. Environmental Ambience
 
-根据环境建立持续空间底噪：
+根据空间推荐环境底噪：
 
-- 室内 room tone、空调、电流、机器低鸣
+- 室内 room tone、通风、电流、机器低鸣
 - 城市交通、人群、远处警笛
-- 森林虫鸣、鸟鸣、风吹树叶
-- 海边浪声、风声
-- 雨、雷、电气环境
-- 大型空间混响、地下空间低频回声
+- 森林虫鸣、风吹树叶
+- 海浪、风声
+- 雨、雷
+- 地下空间低频回响、大空间混响
 
-Ambience 的作用是建立空间，不应抢占主体动作声音。
+Ambience 用于建立空间，不应淹没主体动作。
 
 ### D. Cinematic / Designed SFX
 
-识别或推荐非自然主义的电影化声音设计：
+根据镜头节奏和视觉事件选择性推荐：
 
 - whoosh / swish
 - riser
 - sub-bass hit
-- impact boom
+- impact accent
 - reverse swell
-- low-frequency rumble
 - transition sweep
+- low-frequency rumble
 - glitch / digital pulse
 - energy charge
 - tonal drone
 
-这类声音通常用于强化运镜、转场、揭示、冲击点和节奏，而不是现实世界自然声。
+不要给每个推镜、甩镜或剪辑都机械地加 whoosh / impact。
 
 ### E. Music
 
-反推或推荐：
+推荐音乐时重点描述：
 
-- 有无配乐
-- 音乐类型与质感，而不是具体受版权保护的曲目
-- 节拍密度、速度感、强弱变化
-- 主导乐器或音色族群
+- 音乐类型和质感
+- 节奏密度
+- 音色/乐器族群
 - 情绪功能
-- 与剪辑/动作是否同步
-- 是否在关键事件前留白、抽空、骤停或进入高潮
+- 强弱变化
+- 是否跟剪辑或动作同步
+- 是否在关键时刻抽空、骤停或进入高潮
 
-优先写“低沉电子脉冲 + 缓慢上升的氛围合成器”这类生成导向描述，不要默认指定现成歌曲。
+优先使用生成导向描述，例如：
+
+```text
+低沉电子脉冲 + 稀薄氛围合成器，节奏克制，随着追逐压力逐渐增强，但不覆盖动作声。
+```
+
+不要默认指定具体歌曲。
 
 ### F. Silence / Dynamic Contrast
 
-沉默也是声音设计的一部分。检查：
+留白也是声音设计的一部分。
 
-- 动作前是否短暂停顿
-- 冲击前是否抽掉环境声或音乐
-- 揭示后是否留白
-- 是否通过 sudden silence 强化后续 impact
+可推荐：
 
-不要为了“丰富”而给每一秒塞满声音。
+- 动作前短暂安静
+- 冲击前削弱环境声
+- reveal 后短暂停顿
+- 音乐突然抽空
+- ambience 暂时退出后重新回来
 
-## 3. 从视觉推测声音的规则
+不要为了“丰富”让每一秒都有声音事件。
 
-### 强证据
+## 2. 从视觉到声音推荐
 
-以下事件通常可以给出高置信度声音推测：
+### 视觉证据强，可以直接推荐
 
-- 可见脚落地 → 对应材质脚步
+- 脚明显落地 → 对应地面材质脚步
 - 门明显关闭 → 门体/锁舌声
-- 两物体明确碰撞 → impact/contact
-- 雨水明显击打环境 → rain ambience
-- 枪口可见开火 → 枪声/机械动作（具体类型不确定时不要过度精确）
-- 爆炸视觉事件 → blast + low-end impact + debris tail
-- 玻璃明确碎裂 → glass break
+- 物体碰撞 → contact / impact
+- 雨水明显存在 → rain ambience
+- 玻璃碎裂 → glass break
+- 车辆高速行驶 → 发动机、轮胎、风噪、车身震动相关声音
 
-### 中等证据
+### 可考虑，但应保持克制
 
-可以推荐但需要保守：
+- 快速挥臂/挥剑 → subtle whoosh
+- 快速甩镜 → directional whoosh
+- 能量积聚 → tonal rise / energy charge
+- 大型物体高速经过 → low-frequency pass-by
+- 紧张特写 → restrained low drone
 
-- 快速挥臂/挥剑 → whoosh 或空气切割声
-- 快速推拉/甩镜 → subtle camera whoosh
-- 光能积聚 → tonal rise / energy charge
-- 大型物体经过 → low-frequency pass-by
-- 紧张特写 → low drone / heartbeat-like pulse 作为创作推荐
+### 不应自动推断
 
-### 弱证据
+- 张嘴 → 不等于一定有具体对白
+- 远处车辆 → 不一定需要清晰引擎声
+- 静态霓虹灯 → 不一定需要明显电流噪声
+- 慢动作 → 不代表必须使用低频拉伸音效
 
-不要从下列情况直接断言具体声音：
+## 3. 声音与时间线绑定
 
-- 人物张嘴但听不到音轨 → 不生成具体台词
-- 远处车辆 → 不确定是否能实际听清引擎
-- 静态霓虹灯 → 不自动添加明显电流噪声
-- 画面慢动作 → 不自动认定原视频使用低频拉伸音效
-
-## 4. 声音与时间线绑定
-
-声音设计必须跟随 Shot 与 Action Phase，而不是单独列一个无时间关系的音效清单。
-
-推荐结构：
-
-```text
-0.0-1.8s  Ambiente: quiet industrial room tone, distant ventilation hum
-1.8-2.4s  Foley: two fast footsteps approaching
-2.4s      Sync SFX: metal door slam
-2.4-3.0s  Designed SFX: short sub-bass impact, followed by room reverb tail
-3.0-4.5s  Music: tense pulse rises slightly, then cuts before the reveal
-```
-
-对于连续动作：
-
-```text
-anticipation → subtle cloth movement + breath intake
-execution → fast whoosh synchronized to arm motion
-impact → dry contact hit + short low-frequency accent
-recovery → debris/cloth tail + ambience returns
-```
-
-## 5. 声音与运镜联动
-
-不要把每次运镜都机械地加 whoosh。仅在视觉速度、剪辑风格或参考音频支持时使用。
-
-可考虑：
-
-- whip pan → short directional whoosh
-- fast push-in → restrained tonal rise or air movement
-- crash zoom → sharp accent / transient hit
-- reveal/orbit completion → tonal resolve or subtle impact
-- hard cut → 可无声音过渡，也可用 cut hit；取决于整体风格
-- montage cut → beat-synced click/impact/foley 可以增强节奏
-
-声音应服务镜头，不要让镜头运动被声音设计绑死。
-
-## 6. 空间与声学属性
-
-声音推荐至少考虑：
-
-- 距离：near / mid / far
-- 方位：left / center / right / off-screen
-- 空间：dry / small room / large hall / exterior open space
-- 混响长度与强弱
-- 高频衰减和遮挡感
-- 远近层次
+声音推荐应跟随视觉时间线，而不是输出一个孤立的音效清单。
 
 例如：
 
 ```text
-Close footsteps remain dry and centered; distant crowd ambience is diffuse and low in the mix; the impact carries a short metallic reverb matching the warehouse interior.
+0.0-1.8s  环境：低沉车内发动机/风噪，轻微车身震动声
+1.8-2.4s  动作：人物转头 | 可加入轻微衣料摩擦
+2.4s      事件：金属物体碰撞 | 同步短促 contact hit
+2.4-3.0s  尾音：短空间混响，环境声继续
+3.0-4.5s  音乐：紧张脉冲轻微增强，在 reveal 前稍微抽空
 ```
 
-## 7. 原声复刻与创作增强分开输出
-
-默认同时给两部分：
-
-### A. 推测原声（Likely Source Audio）
-
-只放：
-
-- 已确认声音
-- 有明显视觉证据的高概率声音
-- 必要的不确定性说明
-
-### B. 推荐声音设计（Recommended Sound Design）
-
-为了更适合 AI 生成或后期制作，可以主动推荐：
-
-- ambience 层
-- 同步 Foley
-- cinematic accents
-- 音乐情绪与节奏
-- silence / dynamic contrast
-
-这样用户可以清楚知道哪些是“复刻”，哪些是“增强”。
-
-## 8. 最终声音输出模板
+动作型镜头可参考：
 
 ```text
-### 声音反推
-- 已确认：...
-- 高概率推测：...
-- 不确定：...
+anticipation → breath / cloth movement
+execution → restrained motion whoosh
+impact → contact hit + optional low-end accent
+recovery → debris / room tail + ambience return
+```
 
+## 4. 声音与运镜联动
+
+声音可以强化镜头，但不要绑死镜头。
+
+可考虑：
+
+- whip pan → 短促 directional whoosh
+- fast push-in → restrained tonal rise
+- crash zoom → sharp transient accent
+- reveal/orbit completion → tonal resolve / subtle accent
+- montage cut → beat-synced click / impact / Foley
+
+很多镜头完全可以不需要运镜音效。
+
+## 5. 空间与声学属性
+
+推荐声音时考虑：
+
+- 距离：near / mid / far
+- 方位：left / center / right / off-screen
+- 空间：dry / small room / hall / exterior
+- 混响长度
+- 高频衰减
+- 遮挡感
+- 前后景层次
+
+例如：
+
+```text
+近处脚步保持清晰偏干，远处人群环境声低而扩散；金属撞击带有与仓库空间匹配的短混响。
+```
+
+## 6. 推荐输出结构
+
+默认输出为：
+
+```text
 ### 推荐声音设计
 - 环境底噪：...
 - 动作拟音：...
+- 人声/呼吸：...
 - 电影化音效：...
 - 音乐：...
-- 动态/留白：...
+- 留白/动态：...
 
-### 时间线
+### 声音时间线（需要时）
 - 0.0-2.0s: ...
 - 2.0-3.5s: ...
 - 3.5-5.0s: ...
 ```
 
-如果目标视频模型支持原生音频生成，可将必要声音描述编译进最终视频 Prompt；如果模型主要生成无声视频，则把声音块作为独立的 **Audio / Sound Design Prompt** 输出，供后续音频生成或剪辑使用。
+如果用户提供了可靠音频并明确要求分析原声，可以额外说明“听到的声音”，但不要让这成为默认职责。
 
-## 9. 质量检查
+## 7. 原生音频模型与独立声音 Prompt
 
-返回前检查：
+如果目标视频模型支持原生音频，可把必要声音参考融入主视频 Prompt。
 
-- 是否清楚区分“听到 / 推测 / 推荐”？
-- 是否给动作事件绑定了对应声音时点？
-- 是否考虑空间、距离、材质和重量？
-- 是否存在无意义的 whoosh/impact 堆叠？
-- 音乐是否在描述功能和节奏，而不是只写“cinematic music”？
-- 是否使用 silence 和 dynamic contrast？
-- 是否避免杜撰不可见的对白内容？
-- 声音是否与画面节奏、剪辑点和 Action Phase 对齐？
+如果模型不支持、支持情况不明确，或用户希望单独控制声音，则输出：
+
+```text
+VIDEO PROMPT
+...
+
+RECOMMENDED AUDIO / SOUND DESIGN PROMPT
+...
+```
+
+## 8. 质量检查
+
+确认：
+
+- 声音是否明确作为“推荐参考”而不是“准确原声事实”。
+- 是否与动作、材质、空间和剪辑节奏对应。
+- 是否避免过度 whoosh / impact 堆叠。
+- 是否考虑留白和动态对比。
+- 是否避免杜撰具体对白。
+- 是否足够具体，让支持音频的视频模型能够参考。
