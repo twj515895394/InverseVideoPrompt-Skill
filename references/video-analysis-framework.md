@@ -1,6 +1,6 @@
 # Video Analysis Framework
 
-Use this reference for detailed reverse-engineering of a reference video. The goal is to reconstruct the generative logic of the clip rather than produce a generic visual description.
+Use this reference for detailed reverse-engineering of a reference video. The goal is to reconstruct the generative logic of the clip, then describe it with enough professional visual detail to be useful for video generation.
 
 ## Analysis Hierarchy
 
@@ -8,15 +8,16 @@ Analyze from large structure to small detail:
 
 1. Clip-level intent and rhythm
 2. Shot / visual-event segmentation
-3. Shot-level subject, action, environment, camera, lighting, style
-4. Cross-shot temporal continuity
-5. Audio evidence, sound inference, and audiovisual rhythm
+3. Shot-level subject, action, performance, environment, composition, camera, lighting, material/style
+4. Description enrichment: how these elements behave and change
+5. Cross-shot temporal continuity
 6. Global continuity
-7. Final generation-oriented prompt compilation
+7. Recommended audio reference when useful
+8. Final generation-oriented prompt compilation
 
 ## 1. Subject
 
-Record only identity-relevant or generation-relevant attributes:
+Record identity-relevant or generation-relevant attributes:
 
 - person / creature / object type
 - visible age range or design category when useful
@@ -27,7 +28,7 @@ Record only identity-relevant or generation-relevant attributes:
 - position in frame
 - relationship to other subjects
 
-Do not over-describe minor details that do not affect reconstruction.
+Do not stop at an inventory of appearance. When useful, describe posture, tension, orientation and relation to the frame.
 
 ## 2. Action
 
@@ -43,13 +44,53 @@ Useful fields:
 - follow-through
 - recovery/end state
 - screen direction
+- path
 - acceleration/deceleration
+- force / weight
+- hesitation / pause
+- body participation
 - interaction target
 - cause-and-effect relationship
 
-For simple actions, use only the phases that are actually visible.
+For simple actions, use only the phases actually visible.
 
-## 3. Environment
+Prefer:
+
+```text
+She pauses, then slowly guides his arm away with her forearm and shoulder, creating a small but deliberate physical distance.
+```
+
+over:
+
+```text
+She moves his arm away.
+```
+
+when the richer behavior is visibly supported.
+
+## 3. Performance
+
+When a human or character performance matters, analyze more than the emotion label.
+
+Observe:
+
+- gaze direction and gaze shifts
+- eye tension / blink behavior
+- brow movement
+- mouth corners and lip tension
+- jaw / chin / cheek tension
+- breathing or visible breath control
+- head movement and stillness
+- shoulder / neck posture
+- hand self-regulation gestures
+- restraint versus release
+- emotional transition over time
+
+Translate abstract emotion into visible performance whenever the evidence allows.
+
+For facial close-ups, emotional progression, crying, smiling, restraint, hesitation, anger or fear, read `performance-and-microexpression.md`.
+
+## 4. Environment
 
 Describe spatially meaningful scene information:
 
@@ -62,10 +103,33 @@ Describe spatially meaningful scene information:
 - time of day
 - crowd/traffic/background activity
 - depth and scale
+- openness / enclosure
+- horizon / vanishing depth
+- haze / fog / heat shimmer / dust
+- environmental motion
 
-Prioritize details that help preserve camera geography and continuity.
+Do not merely name the place. Explain its spatial character when that contributes to the shot.
 
-## 4. Camera
+## 5. Composition
+
+Analyze how elements are organized within the frame:
+
+- subject scale
+- left/right/top/bottom placement
+- foreground / midground / background relationship
+- visual weight
+- negative space
+- frame-within-frame
+- leading lines
+- central visual anchor
+- overlap / occlusion
+- symmetry / asymmetry
+- depth layering
+- narrative function of props, mirrors, windows, doors, screens, etc.
+
+Composition description should remain evidence-based and should not force every shot into a textbook composition category.
+
+## 6. Camera
 
 Analyze:
 
@@ -80,9 +144,17 @@ Analyze:
 - foreground parallax
 - perspective change
 
-Separate camera motion from subject motion. Read `camera-motion-and-language.md` when the distinction is uncertain.
+Then describe the **visible result** of the camera behavior:
 
-## 5. Lighting
+- Does the subject grow in frame?
+- Is the subject held at a stable scale while the background moves?
+- Does foreground parallax increase speed?
+- Does the movement feel floating, rough, restrained, vehicle-mounted, handheld, or locked?
+- Does the camera movement begin or settle at an emotional beat?
+
+Separate camera motion from subject motion. Read `camera-motion-and-language.md` when uncertain.
+
+## 7. Lighting
 
 Identify visible lighting logic:
 
@@ -98,17 +170,29 @@ Identify visible lighting logic:
 - exposure behavior
 - highlight bloom or clipping
 
+Then describe how light acts on the scene:
+
+- where it lands on skin, glass, metal, fabric or environment
+- how highlights behave
+- how dense shadows remain
+- whether light bands, reflections or practicals move through time
+- whether exposure changes as the subject/camera moves
+
 Do not invent exact fixture types when only light behavior is visible.
 
-## 6. Style
+## 8. Material and Style
 
 Translate vague style into visible properties:
 
 - photorealistic / stylized / animation / illustrative
 - color palette
 - saturation and contrast
-- materials and texture
 - skin rendering
+- fabric weight / folds
+- glossy / matte / satin surfaces
+- wear, aging, scratches, dust, patina
+- wetness / dryness
+- reflection softness
 - grain / noise
 - bloom / diffusion
 - sharpness
@@ -116,9 +200,9 @@ Translate vague style into visible properties:
 - grading
 - motion rendering character
 
-Avoid generic adjectives without visible evidence.
+Do not over-specify exact material type when the surface is ambiguous.
 
-## 7. Temporal Continuity
+## 9. Temporal Continuity
 
 For each shot or event, ask:
 
@@ -135,17 +219,30 @@ For each shot or event, ask:
 ### What changes?
 
 - subject pose/action
+- facial performance
 - object state
 - camera position
 - framing
 - focus
 - environment state
 - light intensity
-- particles/effects
+- reflections
+- smoke / particles
+- background distance
 
-The final prompt should preserve the stable set and explicitly sequence the changing set.
+For important changes, describe the progression:
 
-## 8. Narrative Rhythm
+```text
+initial state → beginning of change → deepening change → threshold/peak → ending state
+```
+
+Examples:
+
+- distant pursuit lights begin as tiny colored flashes, grow larger and clearer, then dominate the mirror
+- a smile first pauses, then becomes restrained, then slowly disappears
+- moving sunlight alternates across the face as the vehicle passes through shadow bands
+
+## 10. Narrative Rhythm
 
 Record the temporal function of each beat:
 
@@ -169,50 +266,53 @@ For montage, identify whether edits are driven by:
 - escalation
 - contrast
 
-Rhythm should be encoded in the final prompt when it affects generation.
+Rhythm should be encoded when it affects the generated motion or edit feel.
 
-## 9. Sound and Audiovisual Rhythm
+## 11. Description Enrichment Pass
 
-Treat sound as a temporal layer aligned to the same shot and action timeline.
+After the factual decomposition, perform a second pass that asks:
 
-First determine evidence quality:
+- Can an abstract emotion be translated into visible acting?
+- Can a generic action be described through speed, path, force, pause or inertia?
+- Can the composition explain foreground/background or visual-center relationships?
+- Can the camera description include its visible effect, not only a move name?
+- Can lighting explain how it falls on subject/materials and changes over time?
+- Can materials show age, wear, reflection, folds, moisture or texture?
+- Can the environment explain air, scale and spatial depth?
+- Can a “gradual” change be written as a temporal progression?
+- Can the atmosphere be explained through visible causes rather than adjective stacking?
 
-- usable original audio exists
-- partial/noisy audio exists
-- video is muted
-- only visual frames are available
+Do not force every category into every shot. Enhance only the dimensions that materially improve the reconstruction.
 
-Then separate:
+Read `description-enrichment.md` for detailed patterns.
 
-- **Observed** — directly audible
-- **Inferred** — strongly implied by visible events/materials/environment
-- **Recommended** — creative enhancement for generation or post-production
+## 12. Recommended Sound Reference
 
-Check six sound layers:
+Sound is normally a **recommended reference layer for the video model**, not a claim that the original video definitely contains those sounds.
 
-1. dialogue/vocal
+Based on visible evidence, optionally recommend:
+
+1. dialogue/vocal character when clear
 2. Foley/action SFX
 3. environmental ambience
 4. cinematic/designed SFX
-5. music
+5. music character
 6. silence/dynamic contrast
 
-Ask how sound relates to visible rhythm:
+Align recommendations with visible events and materials:
 
-- Does an impact coincide with an action peak?
-- Does ambience establish the location?
-- Does music accelerate with the cut rate?
-- Is there a deliberate silence before a reveal or impact?
-- Does a transition sound bridge two edits?
-- Are footsteps, mechanical clicks, doors, splashes, or collisions synchronized to visible contact?
+- foot contact → surface-appropriate footsteps
+- vehicle motion → engine / road / wind / cabin vibration character
+- metal door contact → metal impact and room reverb
+- fast visual transition → optional restrained designed accent
 
-Do not infer exact dialogue from visible mouth movement. Do not treat generic cinematic sound effects as evidence of the original soundtrack.
+Use “recommended / suitable / consider” language when source audio is unknown.
 
-For detailed rules, read `audio-inference-and-design.md`.
+Read `audio-inference-and-design.md` for detailed guidance.
 
 ## Shot Record Template
 
-A detailed shot record can use:
+Use only fields that help the actual task:
 
 ```text
 SHOT ID:
@@ -221,12 +321,14 @@ FUNCTION:
 
 SUBJECT:
 ACTION:
+PERFORMANCE:
 ENVIRONMENT:
+COMPOSITION:
 CAMERA:
 LIGHTING:
-STYLE:
-AUDIO OBSERVED/INFERRED:
-AUDIO RECOMMENDED:
+MATERIAL / STYLE:
+TEMPORAL CHANGE:
+RECOMMENDED AUDIO:
 
 OPENING STATE:
 PEAK EVENT:
@@ -236,14 +338,14 @@ CONTINUITY NOTES:
 UNCERTAINTY:
 ```
 
-Use only fields that help the actual task.
-
 ## Cross-Shot Analysis
 
 After individual shots, compare them for:
 
-- left/right screen direction
 - subject identity
+- wardrobe / hair / props
+- left/right spatial relationship
+- screen direction
 - prop state
 - location geometry
 - lighting continuity
@@ -251,10 +353,9 @@ After individual shots, compare them for:
 - edit motivation
 - rhythm escalation
 - repeated framing patterns
-- recurring ambience
-- sound bridges / audio cuts
+- recurring visual motifs
 
-This step prevents locally correct shot descriptions from becoming globally incoherent.
+This prevents locally correct descriptions from becoming globally incoherent.
 
 ## Confidence Discipline
 
@@ -264,21 +365,21 @@ High confidence:
 
 ```text
 The subject crosses from screen-left to screen-right.
-The metal door visibly slams shut.
+Her smile visibly becomes smaller over several seconds.
 ```
 
 Moderate confidence:
 
 ```text
-The framing change is consistent with a forward camera move.
-A synchronized metal impact is highly likely from the visible door contact.
+The framing change is consistent with a gentle forward camera move.
+The restrained jaw tension suggests she is suppressing emotion.
 ```
 
 Low confidence:
 
 ```text
-The sparse frames do not establish whether the scale change comes from a zoom or physical camera movement.
-The visuals suggest tense sound design, but the original music or effects cannot be confirmed.
+The sparse frames do not establish whether the scale change comes from zoom or physical camera movement.
+The eyes are obscured by sunglasses, so gaze and tear buildup cannot be reliably described.
 ```
 
-Never convert low-confidence interpretation into fake exact technical parameters or fake audio facts.
+Never convert low-confidence interpretation into fake exact technical parameters or invisible micro-expression details.
