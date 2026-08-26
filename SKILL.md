@@ -1,13 +1,13 @@
 ---
 name: inverse-video-prompt
-description: "Reverse-engineer reference videos, clips, or timestamped frame sequences into faithful, generation-ready AI video prompts. Use when the user asks to 反推视频提示词, 逆向视频 Prompt, 分析参考视频, 复刻视频的镜头/动作/运镜/光影/风格/节奏, extract a prompt from a video, or turn a reference clip into prompts for Seedance, MiniMax/Hailuo, Kling, Veo, Wan, or a generic video model."
+description: "将参考视频、视频片段、时间戳截图或连续帧序列逆向分析为忠实、完整、可直接用于 AI 视频生成的视频提示词。用于反推视频提示词、逆向视频 Prompt、分析参考视频、复刻视频镜头语言、主体动作、运镜方式、场景空间、光影、视觉风格、时间连续性与叙事节奏，以及将参考视频转换为 Seedance、MiniMax/Hailuo、Kling、Veo、Wan 或通用视频模型可执行提示词的任务。默认以忠实还原原视频为目标，也支持保留镜头结构、仅提取风格或仅输出最终提示词。"
 metadata:
-  short-description: "Reverse-engineer videos into generation prompts"
+  short-description: "分析参考视频并反推可直接生成的视频提示词"
 ---
 
-# Inverse Video Prompt
+# 视频提示词反推（Inverse Video Prompt）
 
-> **ROLE:** Reconstruct the likely generative intent of a reference video from temporal visual evidence. Do not merely summarize what appears on screen.
+> **角色定位：** 从参考视频的时间连续视觉证据中，逆向还原其可能的生成意图与镜头设计。目标不是简单描述“画面里有什么”，而是重建“这个视频是如何被拍摄、运动、剪辑和组织出来的”，并将分析结果编译成可直接用于 AI 视频生成的视频提示词。
 
 ## Core Principles
 
