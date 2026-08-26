@@ -1,214 +1,284 @@
 # Video Analysis Framework
 
-Use this reference when the task needs detailed reconstruction rather than a short prompt-only answer.
+Use this reference for detailed reverse-engineering of a reference video. The goal is to reconstruct the generative logic of the clip rather than produce a generic visual description.
 
-## Analysis Goal
+## Analysis Hierarchy
 
-Reverse engineering asks a different question from ordinary video captioning:
+Analyze from large structure to small detail:
 
-- Captioning: **What is visible?**
-- Reverse engineering: **What sequence of visual instructions could plausibly generate this clip?**
+1. Clip-level intent and rhythm
+2. Shot / visual-event segmentation
+3. Shot-level subject, action, environment, camera, lighting, style
+4. Cross-shot temporal continuity
+5. Audio evidence, sound inference, and audiovisual rhythm
+6. Global continuity
+7. Final generation-oriented prompt compilation
 
-The analysis therefore needs both spatial description and temporal causality.
+## 1. Subject
 
-## Evidence Levels
+Record only identity-relevant or generation-relevant attributes:
 
-Classify conclusions implicitly or explicitly by evidence strength:
+- person / creature / object type
+- visible age range or design category when useful
+- hair, silhouette, proportions
+- wardrobe and accessories
+- important props
+- body orientation
+- position in frame
+- relationship to other subjects
 
-- **Observed** — directly visible in one or more frames or clearly audible.
-- **Strongly inferred** — supported by temporal changes, parallax, continuity, or edit structure.
-- **Weakly inferred** — plausible but not distinguishable from alternatives with the available evidence.
+Do not over-describe minor details that do not affect reconstruction.
 
-Do not turn weak inference into exact technical claims.
+## 2. Action
 
-Examples:
+Treat actions as temporal processes, not static labels.
 
-- A character moves from screen-left to screen-right across consecutive frames: observed.
-- Background parallax while subject size remains nearly stable: strong evidence of lateral camera tracking.
-- Exact 35 mm focal length from a single frame: weak and usually unnecessary.
+Useful fields:
 
-## Shot Record
+- opening pose/state
+- anticipation
+- initiation
+- execution
+- peak/impact
+- follow-through
+- recovery/end state
+- screen direction
+- acceleration/deceleration
+- interaction target
+- cause-and-effect relationship
 
-For each shot, reconstruct the following fields.
+For simple actions, use only the phases that are actually visible.
 
-### 1. Temporal Position
+## 3. Environment
 
-- Start time
-- End time
-- Approximate duration
-- Entry transition
-- Exit transition
-- Speed treatment: real-time, slow motion, accelerated, freeze/hold, speed ramp
+Describe spatially meaningful scene information:
 
-### 2. Subject
+- location type
+- foreground / midground / background layers
+- entrances/exits
+- recurring anchors
+- surfaces and materials
+- weather and atmosphere
+- time of day
+- crowd/traffic/background activity
+- depth and scale
 
-Describe identity-relevant and generation-relevant attributes only:
+Prioritize details that help preserve camera geography and continuity.
 
-- Subject type and count
-- Approximate age/presentation where visually relevant
-- Silhouette and body proportions
-- Hair and visible facial traits
-- Wardrobe, accessories, props
-- Initial position and orientation
-- Relationships among subjects
+## 4. Camera
 
-Separate attributes that stay stable across the clip from shot-local pose/action.
+Analyze:
 
-### 3. Action
+- shot size
+- angle
+- camera height
+- subject-camera distance
+- camera movement
+- framing behavior
+- focus/depth cues
+- stabilization character
+- foreground parallax
+- perspective change
 
-Describe motion as a sequence, not a noun.
+Separate camera motion from subject motion. Read `camera-motion-and-language.md` when the distinction is uncertain.
 
-Prefer:
+## 5. Lighting
 
-`leans back → plants right foot → launches forward → rotates torso → strikes target → recoils`
+Identify visible lighting logic:
 
-Over:
+- primary source
+- source direction
+- hard / soft
+- contrast
+- key-to-fill relationship
+- color temperature
+- practical sources
+- rim/back light
+- volumetric effects
+- exposure behavior
+- highlight bloom or clipping
 
-`fighting dramatically`
+Do not invent exact fixture types when only light behavior is visible.
 
-Track:
+## 6. Style
 
-- Direction
-- Speed and acceleration
-- Contact/interaction
-- Cause and effect
-- Start state
-- Peak action
-- End state
+Translate vague style into visible properties:
 
-For complex actions, use phases:
+- photorealistic / stylized / animation / illustrative
+- color palette
+- saturation and contrast
+- materials and texture
+- skin rendering
+- grain / noise
+- bloom / diffusion
+- sharpness
+- lens/image character
+- grading
+- motion rendering character
 
-1. Anticipation
-2. Initiation
-3. Execution
-4. Peak/impact
-5. Follow-through
-6. Recovery/hold
+Avoid generic adjectives without visible evidence.
 
-Not every action needs every phase.
+## 7. Temporal Continuity
 
-### 4. Environment
+For each shot or event, ask:
 
-Reconstruct spatial organization:
+### What stays stable?
 
-- Location type
-- Foreground anchors
-- Midground subjects/props
-- Background architecture/terrain
-- Ground plane and horizon
-- Entrances, exits, doors, windows, bridges, roads, furniture, landmarks
-- Atmosphere: fog, smoke, dust, rain, snow, particles
-- Time of day and weather
+- identity
+- clothing
+- object design
+- scene geometry
+- lighting logic
+- color palette
+- visual style
 
-Spatial anchors matter because they make camera movement and continuity reproducible.
+### What changes?
 
-### 5. Camera
+- subject pose/action
+- object state
+- camera position
+- framing
+- focus
+- environment state
+- light intensity
+- particles/effects
 
-Record only useful observable or strongly inferred features:
+The final prompt should preserve the stable set and explicitly sequence the changing set.
 
-- Shot size: ELS / LS / FS / MS / MCU / CU / ECU
-- Angle: eye-level / high / low / overhead / worm's-eye / Dutch / POV
-- Camera side and relation to subject
-- Static vs moving
-- Motion type and direction
-- Framing behavior
-- Focus/depth behavior
-- Whether the camera follows, leads, passes, circles, reveals, or holds
+## 8. Narrative Rhythm
 
-Read `camera-motion-and-language.md` before assigning technical motion terms to ambiguous evidence.
+Record the temporal function of each beat:
 
-### 6. Lighting
+- setup
+- hold
+- anticipation
+- acceleration
+- reveal
+- impact
+- pause
+- recovery
+- transition
+- climax
 
-Track:
+For montage, identify whether edits are driven by:
 
-- Primary source: daylight, moonlight, practical, screen, neon, fire, studio source
-- Direction: front, side, rim/back, top, under
-- Quality: hard, soft, diffused, volumetric
-- Contrast ratio impression
-- Color temperature
-- Motivated practical lights
-- Changes during the shot
+- process state changes
+- rhythmic matching
+- action matching
+- spatial progression
+- escalation
+- contrast
 
-Do not add cinematic-lighting clichés unless visible.
+Rhythm should be encoded in the final prompt when it affects generation.
 
-### 7. Style
+## 9. Sound and Audiovisual Rhythm
 
-Describe the visible image system:
+Treat sound as a temporal layer aligned to the same shot and action timeline.
 
-- Photoreal / stylized / animation / anime / 3D / painterly / mixed media
-- Production-design language
-- Material response
-- Palette and saturation
-- Contrast
-- Texture/grain
-- Bloom/halation
-- Chromatic aberration
-- Lens/image character
-- Grading
+First determine evidence quality:
 
-Avoid relying on artist or director names when direct visual descriptors are sufficient.
+- usable original audio exists
+- partial/noisy audio exists
+- video is muted
+- only visual frames are available
 
-### 8. Mood and Rhythm
+Then separate:
 
-Mood should be connected to visible design choices.
+- **Observed** — directly audible
+- **Inferred** — strongly implied by visible events/materials/environment
+- **Recommended** — creative enhancement for generation or post-production
 
-Track:
+Check six sound layers:
 
-- Emotional tone
-- Shot duration pattern
-- Hold vs rapid change
-- Build-up
-- Reveal
-- Impact beat
-- Pause after impact
-- Edit acceleration/deceleration
+1. dialogue/vocal
+2. Foley/action SFX
+3. environmental ambience
+4. cinematic/designed SFX
+5. music
+6. silence/dynamic contrast
 
-## Cross-Shot Continuity
+Ask how sound relates to visible rhythm:
 
-After per-shot analysis, identify invariants:
+- Does an impact coincide with an action peak?
+- Does ambience establish the location?
+- Does music accelerate with the cut rate?
+- Is there a deliberate silence before a reveal or impact?
+- Does a transition sound bridge two edits?
+- Are footsteps, mechanical clicks, doors, splashes, or collisions synchronized to visible contact?
 
-- Same character identity
-- Same wardrobe and prop state
-- Same scene geometry
-- Same time of day/weather
-- Same palette and lighting motivation
-- Same rendering/photographic style
+Do not infer exact dialogue from visible mouth movement. Do not treat generic cinematic sound effects as evidence of the original soundtrack.
 
-Also track state changes:
+For detailed rules, read `audio-inference-and-design.md`.
 
-- Prop intact → broken
-- Character clean → wet/dusty
-- Door closed → open
-- Light off → on
-- Energy core dormant → active
+## Shot Record Template
 
-These state transitions should appear explicitly in the generation sequence when they matter.
+A detailed shot record can use:
 
-## Multi-Shot Narrative Logic
+```text
+SHOT ID:
+TIME RANGE:
+FUNCTION:
 
-For multiple shots, reconstruct why the edit exists.
+SUBJECT:
+ACTION:
+ENVIRONMENT:
+CAMERA:
+LIGHTING:
+STYLE:
+AUDIO OBSERVED/INFERRED:
+AUDIO RECOMMENDED:
 
-Common functions:
+OPENING STATE:
+PEAK EVENT:
+ENDING STATE:
+TRANSITION OUT:
+CONTINUITY NOTES:
+UNCERTAINTY:
+```
 
-- Establish → detail → action → reaction
-- Wide geography → medium interaction → close-up emphasis
-- Anticipation → impact → aftermath
-- Reveal → confirmation → response
-- Setup → transformation → result
-- Procedural montage: repeated action fragments that collectively show a process
+Use only fields that help the actual task.
 
-Do not flatten these into one continuous camera movement.
+## Cross-Shot Analysis
 
-## Failure Modes
+After individual shots, compare them for:
 
-Reject or revise analysis that:
+- left/right screen direction
+- subject identity
+- prop state
+- location geometry
+- lighting continuity
+- action causality
+- edit motivation
+- rhythm escalation
+- repeated framing patterns
+- recurring ambience
+- sound bridges / audio cuts
 
-- Lists objects without temporal relationships.
-- Uses generic labels such as "cinematic" instead of visible characteristics.
-- Claims exact lens focal lengths without evidence.
-- Omits shot boundaries.
-- Omits the end state of an action.
-- Treats every scale change as a zoom.
-- Describes character motion but leaves the camera undefined.
-- Describes the camera but leaves subject action vague.
-- Repeats unchanged style prose for every shot instead of using a continuity block.
+This step prevents locally correct shot descriptions from becoming globally incoherent.
+
+## Confidence Discipline
+
+Prefer evidence-backed phrasing.
+
+High confidence:
+
+```text
+The subject crosses from screen-left to screen-right.
+The metal door visibly slams shut.
+```
+
+Moderate confidence:
+
+```text
+The framing change is consistent with a forward camera move.
+A synchronized metal impact is highly likely from the visible door contact.
+```
+
+Low confidence:
+
+```text
+The sparse frames do not establish whether the scale change comes from a zoom or physical camera movement.
+The visuals suggest tense sound design, but the original music or effects cannot be confirmed.
+```
+
+Never convert low-confidence interpretation into fake exact technical parameters or fake audio facts.
