@@ -1,4 +1,4 @@
 interface:
-  display_name: "Inverse Video Prompt"
-  short_description: "Reverse-engineer videos into generation-ready prompts"
-  default_prompt: "Use $inverse-video-prompt to analyze this reference video and reconstruct a faithful generation-ready prompt."
+  display_name: "视频提示词反推"
+  short_description: "分析参考视频的镜头、动作、运镜、光影、风格与节奏，反推出可直接生成的视频提示词"
+  default_prompt: "使用 $inverse-video-prompt 分析这个参考视频，按时间线拆解镜头、主体动作、运镜、场景、光影、风格与节奏，并反推出忠实、完整、可直接用于视频生成模型的提示词。"
