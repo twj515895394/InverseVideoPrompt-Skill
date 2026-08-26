@@ -174,6 +174,8 @@ Unless the user requests another format, return:
 6. **Audio / Sound Design Prompt** — include separately when useful or when the target video model does not natively handle audio.
 7. **关键不确定项** — only items that could meaningfully change the reconstruction.
 
+The sound section should normally be concrete enough to use in generation or post-production. Do not reduce it to vague phrases such as “cinematic sound effects” or “epic music.” Describe event timing, material, space, intensity, and musical function when evidence supports it.
+
 If the user asks for only the prompt, perform the analysis internally and return the compiled video prompt; include a compact audio block only when sound materially affects the requested result.
 
 ## Fidelity Modes
