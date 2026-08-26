@@ -157,6 +157,7 @@ Load only what the task needs:
 - Camera vocabulary and inference: [references/camera-motion-and-language.md](references/camera-motion-and-language.md)
 - Prompt synthesis and output patterns: [references/prompt-compilation.md](references/prompt-compilation.md)
 - Generator-specific adaptation: [references/model-adapters.md](references/model-adapters.md)
+- Calibration examples for continuous shots, multi-shot action, montage, and sparse frames: [references/examples.md](references/examples.md)
 
 ## Guardrails Against Weak Reconstructions
 
