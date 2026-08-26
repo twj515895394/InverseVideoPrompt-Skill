@@ -195,7 +195,7 @@ Load only what the task needs:
 - Sound inference and recommended sound design: [references/audio-inference-and-design.md](references/audio-inference-and-design.md)
 - Prompt synthesis and output patterns: [references/prompt-compilation.md](references/prompt-compilation.md)
 - Generator-specific adaptation: [references/model-adapters.md](references/model-adapters.md)
-- Calibration examples for continuous shots, multi-shot action, montage, and sparse frames: [references/examples.md](references/examples.md)
+- Calibration examples, including audiovisual inference: [references/examples.md](references/examples.md)
 
 ## Guardrails Against Weak Reconstructions
 
