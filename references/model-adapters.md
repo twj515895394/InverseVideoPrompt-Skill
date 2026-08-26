@@ -1,161 +1,152 @@
 # Model Adapters
 
-Use this reference only when the user names a target video generator or asks for multiple model-specific versions.
+Use this reference only after the canonical reverse-engineering analysis is complete. Do not let a target model's preferred prompt style distort the evidence analysis itself.
 
-## Adapter Principle
+## General Rule
 
-The reverse-engineering analysis is model-independent. Do not change the inferred shot/action structure merely to fit a generator.
+Keep two layers separate:
 
-Adapt only the **packaging**:
+1. **Canonical reverse representation** — shot timeline, subject/action, camera, environment, lighting, style, continuity, rhythm, and sound intent.
+2. **Model-specific prompt** — a compiled version optimized for the target generator.
 
-- Prompt density
-- Chronological phrasing
-- Shot labels
-- Camera vocabulary
-- Negative constraints
-- Platform-native fields
-- Reference-image/video instructions
+If a target model's current native-audio capability is unknown or not established by the user, do not assume it. Keep sound as a separate **Audio / Sound Design Prompt** unless the user explicitly wants integrated audiovisual prompting.
 
-Model interfaces change frequently. Do not invent current parameter names, limits, or capabilities. If the exact version matters and current documentation is available, consult it before using platform-specific syntax.
+## Generic Video Model
 
-## Model-Neutral Default
+Use a clear temporal sequence and avoid model-specific control syntax.
 
-Use this when the target is unspecified.
+Recommended order:
+
+```text
+subject + action progression
+camera behavior
+scene/environment
+lighting/style
+continuity constraints
+temporal transitions
+optional sound intent
+```
+
+For multi-shot videos, retain explicit shot boundaries.
+
+## Seedance
+
+Favor direct, chronological descriptions with clear action progression and camera behavior.
 
 Prioritize:
 
-1. Global continuity
-2. Chronological shot/action sequence
-3. Explicit camera behavior
-4. Visible state changes
-5. Lighting/style
-6. Minimal constraints
+- who/what is visible
+- what changes over time
+- motion direction and action phase
+- camera follow/push/pull/orbit/pan behavior
+- shot transitions when present
+- continuity of subject and scene
+- concise audiovisual events when the chosen workflow supports audio
 
-This should be portable enough to adapt later.
+Avoid turning the prompt into a long cinematography textbook. Translate technical analysis into clear generation instructions.
 
-## Seedance Family
-
-Prefer a clear temporal description with strong action and camera sequencing.
-
-Recommended packaging:
+When sound matters, prefer synchronized event language such as:
 
 ```text
-Global continuity: ...
-
-0.0–2.0s: ...
-2.0–4.5s: ...
-4.5–6.0s: ...
-
-Camera: ...
-Visual style: ...
-Continuity constraints: ...
+the door slams exactly as the shot cuts; a short metallic impact and compact reverb tail emphasize the transition
 ```
 
-For a multi-shot reference, preserve explicit edit boundaries instead of describing all shots as a single uninterrupted move.
+If native audio generation is not part of the active Seedance workflow, move this into a separate sound-design prompt.
 
-If the current Seedance interface provides native reference or shot controls, put information into those controls rather than redundantly forcing everything into prose.
+## MiniMax / Hailuo
 
-## MiniMax / Hailuo Family
+Favor visually explicit subject action, strong temporal verbs, stable identity descriptions, and readable camera direction.
 
-Favor concise chronological motion instructions.
-
-Recommended emphasis:
-
-- Subject start state
-- Clear action verbs
-- Direction and interaction
-- Camera relation and movement
-- Peak event
-- End state
-
-Avoid burying motion under long style prose.
-
-When the exact MiniMax model/version has dedicated camera, reference, or duration controls, map the reverse-engineered fields to those controls when possible.
-
-## Kling Family
-
-Keep action choreography and camera movement explicit and physically coherent.
-
-Useful packaging:
+Useful structure:
 
 ```text
-Scene and subject continuity: ...
-Action sequence: ...
-Camera sequence: ...
-Lighting/style: ...
-End frame/state: ...
+Start state → action → camera response → peak event → end state
 ```
 
-For image-to-video workflows, avoid re-describing stable visual identity that is already fully supplied by the reference image unless the detail is needed to prevent drift.
+Keep competing motion instructions limited. If the camera move is complex, describe the primary move first and secondary adjustment second.
 
-## Veo Family
+For sound, keep recommendations event-driven and concise. Separate original-sound inference from creative recommendations.
 
-Use clear cinematography language and temporal progression.
+## Kling
 
-Separate when useful:
+Favor physical motion clarity and spatial consistency.
 
-- Scene/subject
-- Action
-- Camera
-- Lighting/style
-- Audio/dialogue only if the user wants audio reconstruction and the interface supports it
+Emphasize:
 
-Do not invent audio merely because the source video contains visual action.
+- body mechanics
+- direction of movement
+- interaction with objects/environment
+- foreground/background relationship
+- camera movement relative to subject
+- explicit beginning and ending states
 
-## Wan Family
+For action shots, preserve anticipation → execution → impact → recovery when visible.
 
-Use a direct generation prompt with an optional compact negative-constraint block when the workflow exposes one.
+When adding sound instructions in a supported workflow, align Foley and impact events to these action phases rather than listing generic effects.
 
-Prioritize:
+## Veo
 
-- Subject and action
-- Camera
-- Environment
-- Lighting/style
-- Temporal sequence
+Use rich cinematic language when useful, but maintain temporal precision.
 
-Do not copy a long analytical report into the generation field.
+Include:
 
-## Image-to-Video Adaptation
+- scene and subject
+- cinematography
+- action timing
+- lighting and visual atmosphere
+- edit grammar
+- audio behavior when relevant to the requested workflow
 
-When the user will provide a start/reference image:
+For audiovisual prompting, describe dialogue/vocal, ambience, Foley, music, and designed SFX only when supported by evidence or clearly labeled as recommendations. Keep lip-sync text separate when exact dialogue is user-provided.
 
-Move stable visual information out of the prompt when the image already establishes it reliably.
+## Wan
 
-Prompt mainly:
+Favor direct visual instructions and avoid unnecessary abstraction.
 
-- Motion
-- Camera
-- Interaction
-- Environment changes
-- Effects
-- End state
+Structure around:
 
-Still state continuity constraints that are likely to drift, such as keeping the same outfit, prop, or number of characters.
+- subject
+- motion
+- scene
+- camera
+- visual style
+- temporal progression
 
-## Start/End-Frame Workflows
+If sound is not generated by the active Wan workflow, always return audio guidance separately.
 
-When both start and end frames are provided:
+## Adapter Selection
 
-Do not waste the prompt describing the two images in detail. Reconstruct the **transition path**:
+When the user names a generator, compile for that generator.
 
-- What initiates movement
-- Intermediate action phases
-- Camera path
-- Object/character interaction
-- Timing and easing impression
-- Effects evolution
-- How the final frame is reached
+When no generator is named:
 
-If the reference video uses cuts between the start and end states, do not falsely describe a continuous physical transition unless the user's target workflow requires one.
+- return a model-neutral prompt
+- preserve sufficient structure for later adaptation
+- do not guess provider-specific syntax or unsupported controls
+- keep a separate sound-design block when audio materially affects the reconstruction
 
-## Multi-Model Output
+## Audio Output Policy Across Models
 
-When asked for several target models:
+Use one of three output strategies:
 
-1. Perform reverse engineering once.
-2. Keep one shared shot timeline and continuity specification.
-3. Compile separate model adapters from the same evidence.
-4. Do not independently reinterpret the source for each model unless necessary.
+### Strategy A — Integrated audiovisual prompt
 
-This prevents model-specific versions from drifting away from the reference.
+Use only when the requested model/workflow supports or is explicitly expected to generate synchronized audio.
+
+### Strategy B — Video prompt + separate audio prompt
+
+Use by default when native audio capability is absent, unknown, or handled by a separate model/tool.
+
+```text
+VIDEO PROMPT
+...
+
+AUDIO / SOUND DESIGN PROMPT
+...
+```
+
+### Strategy C — Sound timeline only
+
+Use when the user already has the visual generation prompt and only needs audio reconstruction or post-production guidance.
+
+Never remove important visual timing just because audio is being handled separately; the audio timeline must refer back to the same shot/action timing.
