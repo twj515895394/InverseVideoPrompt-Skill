@@ -1,0 +1,4 @@
+interface:
+  display_name: "Inverse Video Prompt"
+  short_description: "Reverse-engineer videos into generation-ready prompts"
+  default_prompt: "Use $inverse-video-prompt to analyze this reference video and reconstruct a faithful generation-ready prompt."
